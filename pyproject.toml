@@ -1,0 +1,41 @@
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "simplex-ai-sdk"
+version = "0.1.0"
+description = "Python client for the Simplex AI structured decision API"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{name = "Simplex AI"}]
+dependencies = ["httpx>=0.27,<1", "pydantic>=2.7,<3"]
+classifiers = ["Development Status :: 4 - Beta", "Programming Language :: Python :: 3", "Programming Language :: Python :: 3.10", "Programming Language :: Python :: 3.11", "Programming Language :: Python :: 3.12", "Programming Language :: Python :: 3.13", "Programming Language :: Python :: 3.14", "Typing :: Typed"]
+
+[project.urls]
+Homepage = "https://simplexai.net"
+Documentation = "https://github.com/SPX-AI968/spx-sdk#readme"
+Repository = "https://github.com/SPX-AI968/spx-sdk"
+Issues = "https://github.com/SPX-AI968/spx-sdk/issues"
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-asyncio>=0.24", "build>=1.2", "twine>=6", "ruff>=0.9", "mypy>=1.14"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/simplex_ai"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
