@@ -45,7 +45,7 @@ def _configuration(api_key: str | None, base_url: str | None) -> tuple[str, dict
         "Authorization": f"Bearer {token}",
         "Accept": "application/json",
         "Content-Type": "application/json",
-        "User-Agent": "simplex-ai-sdk/0.1.0",
+        "User-Agent": "simplex-ai-sdk/0.2.0",
     }
 
 
@@ -55,8 +55,7 @@ def _payload(
     questions: Mapping[str, Question | Mapping[str, Any]],
     model: Model,
     images: Sequence[Image | Mapping[str, Any]] | None,
-    reasoning: bool,
-    reasoning_max_tokens: int,
+    effort: int,
 ) -> bytes:
     request = DecisionRequest.model_validate(
         {
@@ -64,21 +63,19 @@ def _payload(
             "questions": dict(questions),
             "model": model,
             "images": list(images or []),
-            "reasoning": reasoning,
-            "reasoning_max_tokens": reasoning_max_tokens,
+            "effort": effort,
         }
     )
-    if request.reasoning:
+    if request.effort > 1:
         warnings.warn(
-            "Reasoning is experimental and not recommended for normal use.",
+            "Advanced effort is not recommended for normal use: it increases latency and charges 1–5× input usage.",
             UserWarning,
             stacklevel=3,
         )
     # Do not exclude None recursively: null criteria and null state are meaningful.
     data = request.model_dump(mode="python")
-    if not reasoning:
-        data.pop("reasoning")
-        data.pop("reasoning_max_tokens")
+    if effort == 1:
+        data.pop("effort")
     if not request.images:
         data.pop("images")
     try:
@@ -169,17 +166,15 @@ class SimplexClient:
         questions: Mapping[str, Question | Mapping[str, Any]],
         model: Model = "spx-cd",
         images: Sequence[Image | Mapping[str, Any]] | None = None,
-        reasoning: bool = False,
-        reasoning_max_tokens: int = 512,
+        effort: int = 1,
     ) -> DecisionResponse:
-        """Run named decisions. Reasoning is experimental and disabled by default."""
+        """Run named decisions. Keep effort=1 for normal use; higher effort costs more."""
         body = _payload(
             state=state,
             questions=questions,
             model=model,
             images=images,
-            reasoning=reasoning,
-            reasoning_max_tokens=reasoning_max_tokens,
+            effort=effort,
         )
         return _decision(self._request("POST", "/v1/system-one", body))
 
@@ -232,16 +227,14 @@ class AsyncSimplexClient:
         questions: Mapping[str, Question | Mapping[str, Any]],
         model: Model = "spx-cd",
         images: Sequence[Image | Mapping[str, Any]] | None = None,
-        reasoning: bool = False,
-        reasoning_max_tokens: int = 512,
+        effort: int = 1,
     ) -> DecisionResponse:
         body = _payload(
             state=state,
             questions=questions,
             model=model,
             images=images,
-            reasoning=reasoning,
-            reasoning_max_tokens=reasoning_max_tokens,
+            effort=effort,
         )
         return _decision(await self._request("POST", "/v1/system-one", body))
 

@@ -78,7 +78,7 @@ SDK 不自动重试、不跟随重定向。超时不代表模型一定未执行�
 <details>
 <summary>实验性功能：推理（暂不推荐使用）</summary>
 
-默认关闭。显式传入 `reasoning=True` 可开启，并触发实验性警告。`reasoning_max_tokens` 为 16–2048，默认 512。响应不包含推理文本。SDK 不提供 `label_style` 参数。
+`effort` 接受 1–5 的整数，默认 1。日常使用不推荐提高 effort：更高值增加候选顺序评估次数与延迟，输入用量按相应 1–5 倍计费，不保证效果更好。仅在高级实验中传入 `effort=2`，SDK 会发出提醒。该参数适用于 SPX-CD；Jev 仅接受 1。旧的 `reasoning`、`reasoning_max_tokens` 参数已移除。
 
 </details>
 

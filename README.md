@@ -77,7 +77,7 @@ Probabilities and confidence are preserved as returned, not recalculated. Unknow
 
 Use `spx-cd` (default), `spx-cd-auto`, `spx-cd-flash`, or `spx-cd-pro`. Retrieve the current catalog and server limits with `client.models()`.
 
-`typesafe-ai/jev` uses the same token and supports text Choice, Noul and Score. It does not accept images, multi-choice or reasoning; Score requires at least two criteria and state must be a string, object or array.
+`typesafe-ai/jev` uses the same token and supports text Choice, Noul and Score. It does not accept images or multi-choice; Score requires at least two criteria and state must be a string, object or array.
 
 ## Images
 
@@ -139,9 +139,9 @@ Invalid request data raises `ValueError` (including Pydantic `ValidationError`) 
 The SDK does not retry requests or follow redirects. A timeout or gateway error may leave execution status unknown. `retry_after` is the raw HTTP header (seconds or HTTP date); choose your application's retry policy explicitly. Custom transports may implement their own policies. Error bodies may contain application data; inspect them deliberately rather than logging indiscriminately.
 
 <details>
-<summary>Experimental reasoning — not recommended for normal use</summary>
+<summary>Advanced effort — not recommended for normal use</summary>
 
-Disabled by default. Explicitly pass `reasoning=True` and optionally `reasoning_max_tokens=512` (16–2048). Enabling it emits a warning. Reasoning text is not returned. `label_style` is not an SDK option.
+`effort` accepts integers 1–5 and defaults to 1. Keep the default for normal use. Higher values evaluate more candidate orders, increase latency, and charge the corresponding 1×–5× input usage. This is not a guarantee of better accuracy. For an advanced experiment, pass `effort=2`; the SDK emits a warning. Applies to SPX-CD only; Jev accepts effort=1. Removed `reasoning` and `reasoning_max_tokens` arguments are no longer accepted.
 
 </details>
 

@@ -209,12 +209,12 @@ def test_environment(monkeypatch):
         SimplexClient()
 
 
-def test_experimental_warning():
+def test_advanced_effort_warning():
     with SimplexClient(
         api_key="test", transport=httpx.MockTransport(lambda r: httpx.Response(200, json=RESULT))
     ) as client:
-        with pytest.warns(UserWarning, match="experimental"):
-            client.system_one(state="x", questions=QUESTIONS, reasoning=True)
+        with pytest.warns(UserWarning, match="not recommended"):
+            client.system_one(state="x", questions=QUESTIONS, effort=2)
 
 
 @pytest.mark.asyncio
@@ -304,3 +304,27 @@ def test_invalid_json_response():
     ) as client:
         with pytest.raises(APIResponseError):
             client.system_one(state="x", questions=QUESTIONS)
+
+@pytest.mark.parametrize("effort", [0, 6, True, 1.5, "2", None])
+def test_invalid_effort_never_sends(effort):
+    with SimplexClient(api_key="test", transport=httpx.MockTransport(lambda r: pytest.fail("sent invalid request"))) as client:
+        with pytest.raises(ValueError):
+            client.system_one(state="x", questions=QUESTIONS, effort=effort)
+
+@pytest.mark.parametrize("field", ["reasoning", "reasoning_max_tokens"])
+def test_removed_reasoning_rejected(field):
+    with SimplexClient(api_key="test") as client:
+        with pytest.raises(TypeError):
+            client.system_one(state="x", questions=QUESTIONS, **{field: True})
+
+@pytest.mark.parametrize("effort", range(2, 6))
+@pytest.mark.asyncio
+async def test_async_effort_wire(effort):
+    def handler(request):
+        body = json.loads(request.content)
+        assert body["effort"] == effort
+        assert "reasoning" not in body and "reasoning_max_tokens" not in body
+        return httpx.Response(200, json=RESULT)
+    async with AsyncSimplexClient(api_key="test", transport=httpx.MockTransport(handler)) as client:
+        with pytest.warns(UserWarning, match="not recommended"):
+            await client.system_one(state="x", questions=QUESTIONS, effort=effort)

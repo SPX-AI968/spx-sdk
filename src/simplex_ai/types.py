@@ -116,18 +116,17 @@ class DecisionRequest(RequestModel):
     state: Any
     questions: dict[str, QuestionType] = Field(min_length=1, max_length=64)
     images: list[Image] = Field(default_factory=list, max_length=4)
-    reasoning: bool = False
-    reasoning_max_tokens: int = Field(default=512, ge=16, le=2048, strict=True)
+    effort: int = Field(default=1, ge=1, le=5, strict=True)
 
     @model_validator(mode="after")
     def capabilities(self) -> DecisionRequest:
         if self.model == "typesafe-ai/jev":
             if (
                 self.images
-                or self.reasoning
+                or self.effort != 1
                 or any(isinstance(q, MultiChoice) for q in self.questions.values())
             ):
-                raise ValueError("Jev supports text Choice, Noul and Score only")
+                raise ValueError("Jev supports text Choice, Noul and Score with effort=1 only")
             if not isinstance(self.state, (str, dict, list)):
                 raise ValueError("Jev state must be a string, object or array")
             if any(isinstance(q, Score) and len(q.criteria) < 2 for q in self.questions.values()):
