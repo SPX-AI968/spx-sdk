@@ -141,7 +141,7 @@ The SDK does not retry requests or follow redirects. A timeout or gateway error 
 <details>
 <summary>Advanced effort — not recommended for normal use</summary>
 
-`effort` accepts integers 1–5 and defaults to 1. Keep the default for normal use. Higher values evaluate more candidate orders, increase latency, and charge the corresponding 1×–5× input usage. This is not a guarantee of better accuracy. For an advanced experiment, pass `effort=2`; the SDK emits a warning. Applies to SPX-CD only; Jev accepts effort=1. Removed `reasoning` and `reasoning_max_tokens` arguments are no longer accepted.
+`effort` accepts integers 1–5 and defaults to 1. Keep the default for normal use. Higher values evaluate more candidate orders, increase latency, and charge the corresponding 1×–5× input usage. This is not a guarantee of better accuracy. Pass a higher value only for deliberate experiments; the SDK emits a warning. Returned `usage.input_tokens` already includes all evaluation passes; do not multiply it again. Applies to SPX-CD only; Jev accepts effort=1. Removed `reasoning` and `reasoning_max_tokens` arguments are no longer accepted.
 
 </details>
 

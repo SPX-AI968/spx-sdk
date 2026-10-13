@@ -76,9 +76,9 @@ image = Image.from_file("scene.png")
 SDK 不自动重试、不跟随重定向。超时不代表模型一定未执行，重试前应核对调用记录。自定义网络 transport 的重试策略由调用方负责。
 
 <details>
-<summary>实验性功能：推理（暂不推荐使用）</summary>
+<summary>高级参数：effort（日常使用不推荐）</summary>
 
-`effort` 接受 1–5 的整数，默认 1。日常使用不推荐提高 effort：更高值增加候选顺序评估次数与延迟，输入用量按相应 1–5 倍计费，不保证效果更好。仅在高级实验中传入 `effort=2`，SDK 会发出提醒。该参数适用于 SPX-CD；Jev 仅接受 1。旧的 `reasoning`、`reasoning_max_tokens` 参数已移除。
+`effort` 接受 1–5 的整数，默认 1。日常使用不推荐提高 effort：更高值增加候选顺序评估次数与延迟，输入用量按相应 1–5 倍计费，不保证效果更好。仅在明确的实验中设置更高值，SDK 会发出提醒。返回的 `usage.input_tokens` 已包含全部评估轮次，不要再次乘以 effort。该参数适用于 SPX-CD；Jev 仅接受 1。旧的 `reasoning`、`reasoning_max_tokens` 参数已移除。
 
 </details>
 
